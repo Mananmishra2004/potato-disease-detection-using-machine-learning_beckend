@@ -4,3 +4,4 @@ numpy
 Pillow
 Flask-Cors
 gunicorn  # Important for production web servers
+gdown

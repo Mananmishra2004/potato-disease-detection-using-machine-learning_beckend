@@ -4,7 +4,7 @@ from PIL import Image
 import io
 from flask_cors import CORS
 import os
-import requests
+import gdown
 from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
@@ -20,26 +20,22 @@ def after_request(response):
     return response
 
 
-# 🔥 GOOGLE DRIVE MODEL DOWNLOAD
-MODEL_URL = "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
+# 🔥 GOOGLE DRIVE MODEL DOWNLOAD (FIXED)
+MODEL_ID = "14nIm7u8BNdlb_nhna4Xp7YohxB6diLND"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "model")
 MODEL_PATH = os.path.join(MODEL_DIR, "potato_disease_model1.h5")
 
 try:
-    # Create model folder if not exists
     os.makedirs(MODEL_DIR, exist_ok=True)
 
-    # Download model if not exists
     if not os.path.exists(MODEL_PATH):
-        print("⬇️ Downloading model from Google Drive...")
-        response = requests.get(MODEL_URL)
-        with open(MODEL_PATH, "wb") as f:
-            f.write(response.content)
+        print("⬇️ Downloading model using gdown...")
+        url = f"https://drive.google.com/uc?id={MODEL_ID}"
+        gdown.download(url, MODEL_PATH, quiet=False)
         print("✅ Model downloaded!")
 
-    # Load model
     model = load_model(MODEL_PATH)
     print("✅ Model loaded successfully!")
 
@@ -109,7 +105,7 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 
-# Local testing only
+# Local testing
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port)
